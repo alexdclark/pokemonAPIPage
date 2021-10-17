@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="">
+    <meta name="viewport" content="user-scalable=no, width=device-width shrink-to-fit=no" />
+
+
+
+    <!--Changing title of the home page (Shown in the tab bar) !-->
+    <title>Web API Test</title>
+
+    <!-- Bootstrap core CSS   -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css"
+        integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="pokemonStyle.css">
+</head>
+
+
+<body>
+
+
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-3">
+
+                <div class="form-group">
+                    <label for="Pokemon Input">Search for a Pokemon</label>
+                    <input type="text" class="form-control" id="pokemonInputBox" placeholder="Pokemon">
+                </div>
+
+
+                <button onclick="prepareSearch()" id="searchSubmit" class="btn btn-primary btn-block">Submit</button>
+
+            </div>
+
+            </br>
+
+            <div class="col-sm-9">
+
+                <div id="pokemonCard">
+
+                    <div class="card text-center col-sm-9 mx-auto" style="width: 18rem;">
+                        <h5 class="card-title" id="pokemonName">Search for a Pokemon</h5>
+                        <img class="card-img-top" onclick="randomPokemon()" id="pokemonImage" src="https://sickr.files.wordpress.com/2013/09/pokeball.png"
+                            alt="PokemonImage">
+                        <div class="card-body align-items-center">
+
+                            <ul class="card-text list-unstyled">
+
+                                <li id="pokemonNumberOutput"></li>
+                                <li id="pokemonWeightOutput"></li>
+                                <li id="pokemonHeightOutput"></li>
+                                <li id="pokemonXPOutput"></li>
+                                <li id="pokemonHiddenOutput"></li>
+                                </br>
+                                <a href="https://veekun.com/dex/pokemon/" id="moreInfoLink" class="btn btn-primary btn-block invisible">More
+                                    Info</a> 
+
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("keyup", function (event) {
+            // Cancel the default action, if needed
+            event.preventDefault();
+            // Number 13 is the "Enter" key on the keyboard
+            if (event.keyCode === 13) {
+                // Trigger the button element with a click
+                prepareSearch()
+            }
+
+        });
+
+
+
+
+
+        function prepareSearch() {
+
+            var userSearch = document.getElementById("pokemonInputBox").value;
+
+            userSearch = userSearch.toLowerCase();
+            searchPokemon(userSearch)
+
+        }
+
+        function randomPokemon() {
+
+            pokemonArray = [];
+            const options = {
+                method: 'GET',
+
+                headers: new Headers({
+
+                })
+            }
+
+            var url = "https://pokeapi.co/api/v2/pokemon/";
+
+            fetch(url, options)
+                .then(res => res.json())
+                .then(posts => {
+                    pokemonArray = posts
+
+                    console.log(pokemonArray)
+
+                    let randomIndexPokemon = Math.trunc(Math.random() * 802);
+                    console.log(randomIndexPokemon);
+
+                    searchPokemon(randomIndexPokemon);
+
+                });
+        }
+
+        function searchPokemon(userInput) {
+
+            infoArray = [];
+            const options = {
+                method: 'GET',
+
+                headers: new Headers({
+
+                })
+            }
+
+            var url = "https://pokeapi.co/api/v2/pokemon/" + userInput + "/"
+
+
+            fetch(url, options)
+                .then(res => res.json())
+                .then(posts => {
+                    infoArray = posts
+
+                    var pokemonName = infoArray.name
+                    var pokemonNumber = infoArray.order
+                    var pokemonType = infoArray.types.type
+                    var pokemonWeight = infoArray.weight
+                    var pokemonHeight = infoArray.height
+                    var pokemonImage = infoArray.sprites.front_default
+                    var baseExp = infoArray.base_experience
+                    var isHidden = infoArray.is_hidden
+
+                    console.log(pokemonName + " " + pokemonNumber + " " + pokemonType + " " + pokemonWeight +
+                        " " +
+                        pokemonImage)
+
+                    document.getElementById("pokemonImage").setAttribute("src", pokemonImage);
+
+                    pokemonName = pokemonName.charAt(0).toUpperCase() + pokemonName.slice(1);
+
+
+                    document.getElementById("pokemonName").innerHTML = pokemonName;
+                    document.getElementById("pokemonHeightOutput").innerHTML = "Height: " + pokemonHeight
+                    document.getElementById("pokemonWeightOutput").innerHTML = "Weight: " + pokemonWeight
+                    document.getElementById("pokemonNumberOutput").innerHTML = "Number: " + pokemonNumber
+                    document.getElementById("pokemonXPOutput").innerHTML = "Base XP: " + baseExp
+                    document.getElementById("pokemonHiddenOutput").innerHTML = "Hidden: " + isHidden
+                    document.getElementById("moreInfoLink").setAttribute("href",
+                        "https://veekun.com/dex/pokemon/" +
+                        pokemonName)
+
+                    document.getElementById("pokemonCard").classList.remove("invisible");
+                    document.getElementById("moreInfoLink").classList.remove("invisible");
+
+                });
+        }
+    </script>
+
+
+    <!-- Bootstrap core JavaScript==================================================- ->
+     <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>
